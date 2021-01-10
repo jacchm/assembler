@@ -8,14 +8,16 @@ DOSSEG
     LEFT_KEY    equ     4bh
     RIGHT_KEY   equ     4dh
     RED         db      27, "[31m$"
+    RED_BG      db      27, "[41m$"
     CLS         db      27, "[2J$"    
+    RESET_COL   db      27, "[0m$"   
 	
 	.code
 start:
     mov ax,@data
     mov ds,ax               ; ustaw segment danych
-    mov ah, 09h
-    lea dx, [cls]
+    mov ah, 09h             
+    lea dx, [CLS]           ; wyczyszczenie ekranu
     int 21h
     mov ah, 2h              
     mov dh, 12               ; usttawienie wiersza 
@@ -49,51 +51,51 @@ start:
         ret                 ; powrót
     read endp
 
-; procedura rysowania gwiazdki
-    star proc
+; procedura rysowania 
+    draw proc
         mov ah, 09h
         xor dx, dx
         lea dx, [RED]       ; ustaw kolor czerwony
         int 21h
         xor dx, dx
         mov ah, 02h
-        mov dl, '*'         ; wypisz gwiazdke
+        mov dl, 219         ; rysuj tło
         int 21h
         call read 
         mov ah, 2h
         dec dl
         int 10h
         ret
-    star endp
+    draw endp
 
-; rysowanie gwiazdkek za pomocą kursora:
+; rysowanie za pomocą kursora:
     up:
         call read 
         mov ah, 2h
         dec dh
         int 10h
-        call star
+        call draw
         jmp loop1
     down:
         call read
         mov ah, 2h
         inc dh
         int 10h
-        call star
+        call draw
         jmp loop1
     left:
         call read
         dec dl
         mov ah, 2h
         int 10h
-        call star
+        call draw
         jmp loop1
     right:
         call read
         inc dl
         mov ah, 2h
         int 10h
-        call star
+        call draw
         jmp loop1
 
     koniec:
